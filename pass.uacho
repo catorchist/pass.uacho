@@ -1,0 +1,84 @@
+#!/bin/bash
+
+# Configuración del UACHO LAB
+DIR_DIC="$(dirname "$(realpath "$0")")"
+
+# Estética con figlet y lolcat
+# Banner
+clear
+echo -e "\e[32m"
+cat << 'EOF'
+██╗   ██╗ █████╗  ██████╗██╗  ██╗ ██████╗
+██║   ██║██╔══██╗██╔════╝██║  ██║██╔═══██╗
+██║   ██║███████║██║     ███████║██║   ██║
+██║   ██║██╔══██║██║     ██╔══██║██║   ██║
+╚██████╔╝██║  ██║╚██████╗██║  ██║╚██████╔╝
+ ╚═════╝ ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝ ╚═════╝
+EOF
+echo -e "   Unified Access Control & Hostile Overwatch"
+echo -e "   [ pass.uacho - Auditoría de Claves ]\e[0m"
+echo ""
+echo "------------------------------------------------"
+# Pedir la clave a auditar 
+echo -ne "\e[1;34m[*] Ingresá la clave a buscar (entrada oculta): \e[0m"
+read -rs CLAVE
+echo -e "\e[1;32m [RECIBIDO]\e[0m"
+
+if [ -z "$CLAVE" ]; then
+    echo -e "\e[1;31m[!] Error: No ingresaste nada.\e[0m"
+    exit 1
+fi
+
+echo "------------------------------------------------"
+echo -e "\e[1;33m[*] Buscando coincidencia exacta en zona neutral...\e[0m"
+
+encontrado=false
+
+# Iterar sobre los diccionarios (como el weakpass_4a de 81GB)
+for archivo in "$DIR_DIC"/*.txt; do
+    [ -e "$archivo" ] || continue
+    
+    # Limpia la línea anterior y muestra el archivo actual
+    echo -ne "\r\e[K[>] Escaneando: \e[1;34m$(basename "$archivo")\e[0m"
+    
+    # -m 1: DETIENE la búsqueda al primer hallazgo (Corte exacto)
+    # -n: Indica el número de línea
+    # -F: Texto plano (no procesa regex, es más rápido)
+    # -x: La línea debe ser EXACTA a la clave
+    resultado=$(LC_ALL=C grep -m 1 -nFx "$CLAVE" "$archivo")    
+    if [ $? -eq 0 ]; then
+        echo -e "\n\n\e[1;31m[!!!] ¡CLAVE FILTRADA ENCONTRADA! \e[0m"
+        echo -e "\e[1;37mArchivo: $(basename "$archivo")\e[0m"
+        echo -e "\e[1;37mLínea:   ${resultado%%:*}\e[0m"
+        echo "------------------------------------------------"
+        encontrado=true
+        break # Frena el bucle de archivos también
+    fi
+done
+
+if [ "$encontrado" = false ]; then
+    echo -e "\n\n\e[1;32m[+] LIMPIO: La clave no figura en los diccionarios actuales.\e[0m"
+    echo "------------------------------------------------"
+fi
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
